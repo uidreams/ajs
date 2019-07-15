@@ -1,53 +1,56 @@
-var app = angular.module('beverageApp', []);
+var app = angular.module('beverageApp', ['ngRoute']);
 
-app.controller('beverageAppHeader', function($scope) {
-    $scope.appName = "Beverage Order App";
-})
+app.run(function ($rootScope) {
+  $rootScope.appName = "Beverage Order App";
+  $rootScope.queue = [];
+});
 
-app.controller('beverageOrderFormCtrl', function($scope, $http) {
+app.controller('beverageCtrl', function ($scope, $http, $rootScope) {
+  $scope.orderForm = {};
+
+  $http.get('https://api.myjson.com/bins/wreyv')
+    .then(function (response) {
+      $scope.beverageData = response.data;
+    }, function () {
+      alert('beverage data not loadded');
+    });
+
+  $scope.submitOrder = function (username, selectedBeverage) {
+    $rootScope.queue.push($scope.orderForm);
+    console.log($rootScope.queue);
     $scope.orderForm = {};
-    $scope.queue = [];
-    $scope.processing = [];
-    $scope.ready = [];
+  }
+});
 
-    $scope.beverages =
-    [
-      {
-        "BeverageId": "04d8e4eb-306e-4ff3-a027-7bed4da883f8",
-        "Name": "Sparkling Cranberry Punch"
-      },
-      {
-        "BeverageId": "0ae5a67d-d055-4fef-9a0a-889001dcb241",
-        "Name": "Raspberry Fizz"
-      },
-      {
-        "BeverageId": "1d10b218-f4da-4ae3-a383-de1657dbaa6a",
-        "Name": "Virgin Frozen Margarita"
-      },
-      {
-        "BeverageId": "241ae7d5-4ccb-4b74-8783-bbe2c55f162f",
-        "Name": "Iced Chocolate Delight"
-      },
-      {
-        "BeverageId": "2630c442-84a7-4e44-829f-38e15f7fcbbb",
-        "Name": "Summer Punch"
-      }
-    ];
-    $scope.submitOrder = function(username, selectedBeverage) {
-        $scope.queue.push($scope.orderForm);
-        $scope.orderForm= {};
-    }
+app.controller('queueCtrl', function ($scope, $rootScope) {
 
-    $scope.validQueue = function() {
-        
-    }
+  $scope.processing = [];
+  $scope.ready = [];
 
-    // $http.get('http://myjson.com/15ha9v')
-    //     .success(function (data) {
-    //         alert(data);
-    //         $scope.response = data;
-    //     }) 
-    //     .error(function error(err) {
-    //         $scope.response = err;
-    // })
+  console.log($rootScope.queue);
+
+  $scope.updateQueueStatus = function (index, item) {
+    $rootScope.queue.splice(index, 1);
+    $scope.processing.push(item);
+  }
+  $scope.updateProcessingStatus = function (index, item) {
+    $scope.processing.splice(index, 1);
+    $scope.ready.push(item);
+  }
+  $scope.updateReadyStatus = function (index, item) {
+    $scope.ready.splice(index, 1);
+  }
+})
+app.config(function ($routeProvider) {
+
+  $routeProvider
+    .when('/admin', {
+      templateUrl: 'admin.html',
+      controller: 'beverageCtrl'
+    }).when('/client', {
+      templateUrl: 'client.html',
+      controller: 'beverageCtrl'
+    }).otherwise({
+      redirectTo: "/admin"
+    })
 });
