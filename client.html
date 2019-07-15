@@ -1,0 +1,42 @@
+<div class="container" ng-controller="beverageCtrl">
+    <div class="row">
+        <div class="col-md-3">
+            <h4>Beverage Menu</h4>
+            <ul>
+                <li ng-repeat="beverage in beverageData">{{beverage.Name}}</li>
+            </ul>
+        </div>
+        <div class="col-md-9 queue" ng-controller="queueCtrl">
+            <h4>Beverage Queue</h4>
+            <div class="row">
+                <div class="col-md-4">
+                    <p class="strong">IN THE QUEUE</p>
+                    <div id="queue">
+                        <ul ng-repeat="item in queue" ng-click="updateQueueStatus($index, item)">
+                            <li>{{item.username}}</li>
+                            <li>{{item.selectedBeverage.Name}}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <p class="strong">BEING MIXED</p>
+                    <div id="processing">
+                        <ul ng-repeat="item in processing" ng-click="updateProcessingStatus($index, item)">
+                            <li>{{item.username}}</li>
+                            <li>{{item.selectedBeverage.Name}}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <p class="strong">READY TO COLLECT</p>
+                    <div id="ready">
+                        <ul ng-repeat="item in ready" ng-click="updateReadyStatus($index)">
+                            <li>{{item.username}}</li>
+                            <li>{{item.selectedBeverage.Name}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
